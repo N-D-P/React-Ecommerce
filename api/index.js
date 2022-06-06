@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const UserRouter = require("./routes/user");
 const AuthRouter = require("./routes/auth");
+const ProductRouter = require("./routes/product");
 
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use("/api/users",UserRouter);
 app.use("/api/auth",AuthRouter);
+app.use("/api/products",ProductRouter);
 
 
 
