@@ -5,7 +5,7 @@ router.post('/payment',async (req,res)=> {
         stripe.charges.create({
             source: req.body.tokenId,
             amount: req.body.amount,
-            currency: "inr",
+            currency: "usd",
         },
         (err,res) => {
             if(err) {

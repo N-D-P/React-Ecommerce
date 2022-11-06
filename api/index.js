@@ -8,6 +8,7 @@ const ProductRouter = require("./routes/product");
 const OrderRouter = require("./routes/order");
 const CartRouter = require("./routes/cart");
 const PaymentRouter = require("./routes/stripe");
+const cors = require("cors");
 
 
 dotenv.config();
@@ -17,6 +18,7 @@ mongoose
   .then(() => console.log("Mongo Connected Successfully"))
   .catch((err) => console.error(err));
 
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/users",UserRouter);
