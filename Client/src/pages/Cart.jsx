@@ -1,4 +1,6 @@
 import { Add, Remove } from "@material-ui/icons";
+import { useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
@@ -126,7 +128,7 @@ const Summary = styled.div`
   border: 0.5px solid lightgray;
   border-radius: 10px;
   padding: 20px;
-  height: 40vh;
+  height: 43vh;
 
 `;
 
@@ -160,6 +162,7 @@ width: 100%;
 `;
 
 const Cart = () => {
+  const cart = useSelector(state=>state.cart);
   return (
     <Container>
       <Navbar />
@@ -176,63 +179,42 @@ const Cart = () => {
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetail>
-                <Image src="https://www.pngarts.com/files/3/Women-Jacket-PNG-High-Quality-Image.png" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b>DENIM JACKET
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b>921346114
-                  </ProductId>
-                  <ProductColor color="brown" />
-                  <ProductSize>
-                    <b>SIZE:</b> S
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>2</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>$ 20</ProductPrice>
-              </PriceDetail>
-            </Product>
-            <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src="https://d3o2e4jr3mxnm3.cloudfront.net/Rocket-Vintage-Chill-Cap_66374_1_lg.png" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> BASEBALL CAP 
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b>921343476
-                  </ProductId>
-                  <ProductColor color="gray" />
-                  <ProductSize>
-                    <b>SIZE:</b> M
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>1</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>$ 10</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {
+              cart.products?.map(product => (
+                <Product>
+                <ProductDetail>
+                  <Image src="https://www.pngarts.com/files/3/Women-Jacket-PNG-High-Quality-Image.png" />
+                  <Details>
+                    <ProductName>
+                      <b>Product:</b>{product.title}
+                    </ProductName>
+                    <ProductId>
+                      <b>ID:</b>{product._id}
+                    </ProductId>
+                    <ProductColor color={product.color} />
+                    <ProductSize>
+                      <b>SIZE:</b> {product.size}
+                    </ProductSize>
+                  </Details>
+                </ProductDetail>
+                <PriceDetail>
+                  <ProductAmountContainer>
+                    <Add />
+                    <ProductAmount>{product.quantity}</ProductAmount>
+                    <Remove />
+                  </ProductAmountContainer>
+                  <ProductPrice>$ {product.price * product.quantity}</ProductPrice>
+                </PriceDetail>
+              </Product>
+              ))
+            }
+
           </Info>
           <Summary>
               <SummaryTitle>ORDER SUMMARY</SummaryTitle>
               <SummaryItem>
                   <SummaryItemText>Subtotal</SummaryItemText>
-                  <SummaryItemPrice>$ 50</SummaryItemPrice>
+                  <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
               </SummaryItem>
               <SummaryItem>
                   <SummaryItemText>Estimated Shipping</SummaryItemText>
@@ -244,7 +226,7 @@ const Cart = () => {
               </SummaryItem>
               <SummaryItem type="total"> 
                   <SummaryItemText >Total</SummaryItemText>
-                  <SummaryItemText>$ 50</SummaryItemText>
+                  <SummaryItemText>$ {cart.total}</SummaryItemText>
               </SummaryItem>
               <SummaryButton>Checkout Now</SummaryButton>
           </Summary>

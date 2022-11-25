@@ -5,6 +5,12 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import Newsletter from "../components/Newsletter";
 import { mobile } from "../responsive";
+import { useLocation} from "react-router-dom" 
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { addProduct } from "../redux/cartRedux";
+import { useDispatch } from "react-redux";
+
 
 const Container = styled.div``;
 const Wrapper = styled.div`
@@ -116,51 +122,67 @@ const Button = styled.button`
 
 
 const Product = () => {
+  const location = useLocation();
+  const id = location.pathname.split("/")[2];
+  const [product,setProduct] = useState([]);
+  const [quantity,setQuantity] = useState(1);
+  const [color,setColor] = useState("");
+  const [size,setSize] = useState("");
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/products/find/${id}`);
+        setProduct(res.data);
+      } catch(err) {}
+    }
+    getProducts();
+  },[id]);
   
+  const handleClick = () => {
+    //update cart
+    dispatch(addProduct({...product, quantity, color, size}));
+    
+  }
   return (
     <Container>
       <Navbar />
       <Announcement />
       <Wrapper>
         <ImgContainer>
-          <Image src="https://i.ibb.co/S6qMxwr/jean.jpg'" />
+          <Image src={product.img} />
         </ImgContainer>
         <InfoContainer>
-          <Title>Denim Jumpsuit</Title>
+          <Title>{product.title}</Title>
           <Desc>
-            Ankle-length jumpsuit in lightweight, washed cotton denim with a
-            collar, concealed buttons down the front and a yoke with a pleat at
-            the back. Flap chest pockets, diagonal side pockets and long sleeves
-            with buttoned cuffs. Seam at the waist with a detachable tie belt,
-            pleats at the front and shaping darts at the back. Zip fly and
-            button and wide, gently tapered legs.
+            {product.desc}
           </Desc>
-          <Price>$ 20</Price>
+          <Price>$ {product.price}</Price>
           <FilterContainer>
               <Filter>
                   <FilterTitle>Color</FilterTitle>
-                  <FilterColo color="black"/>
-                  <FilterColo color="darkblue"/>
-                  <FilterColo color="gray"/>
+                  {product.color?.map((c) => (
+                        <FilterColo onClick={()=>setColor(c)} color={c} key={c}/>                        
+                  ))}
               </Filter>
               <Filter>
                   <FilterTitle>Size</FilterTitle>
-                  <FilterSize>
-                      <FilterSizeOption>XS</FilterSizeOption>
-                      <FilterSizeOption>S</FilterSizeOption>
-                      <FilterSizeOption>M</FilterSizeOption>
-                      <FilterSizeOption>L</FilterSizeOption>
-                      <FilterSizeOption>XL</FilterSizeOption>
+                  <FilterSize onChange={(e)=>setSize(e.target.value)}>
+                      {product.size?.map((c) => (
+                        <FilterSizeOption key={c}>{c}</FilterSizeOption>                        
+                      ))}
                   </FilterSize>
               </Filter>
           </FilterContainer>
           <AddContainer>
               <AmountContainer>
-                  <Remove />
-                  <Amount>1</Amount>
-                  <Add />
+                  <Remove onClick={() => setQuantity(quantity>1?quantity-1:quantity)}/>
+                  <Amount>{quantity}</Amount>
+                  <Add  onClick={() => setQuantity(quantity+1)}/>
               </AmountContainer>
-              <Button>ADD TO CART</Button>
+              <Button onClick={handleClick}>ADD TO CART</Button>
           </AddContainer>
         </InfoContainer>
       </Wrapper>

@@ -41,6 +41,12 @@ export const categories = [
     title: 'LIGHT JACKETS',
     category: 'jeans',
   },
+  {
+    id: 4,
+    img: '/5.jpeg',
+    title: 'LIGHT Pants',
+    category: 'Pants',
+  },
 ];
 
 export const popularProducts = [
