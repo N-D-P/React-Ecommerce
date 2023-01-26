@@ -1,11 +1,18 @@
 import { Add, Remove } from "@material-ui/icons";
 import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
+import StripeCheckout from "react-stripe-checkout"
+import { useState,useEffect } from "react";
+import publicRequest from "../requestMethods"
+import axios from "axios";
+
+const KEY = process.env.REACT_APP_STRIPE;
+
 
 const Container = styled.div``;
 
@@ -163,6 +170,30 @@ width: 100%;
 
 const Cart = () => {
   const cart = useSelector(state=>state.cart);
+  const [stripeToken,setStripeToken] = useState(null);
+  const history = useNavigate();
+
+  const onToken = (token) => {
+    setStripeToken(token);
+  }
+
+  useEffect(() => {
+    const makeRequest = async () => {
+      try {
+        const res = await axios.post(`http://localhost:5000/api/checkout/payment`, {
+          tokenId: stripeToken.id,
+          amount: 100,
+        });
+        history.push("/success",{data:res.data});
+
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    stripeToken && cart.total>=1 && makeRequest();
+  }, [stripeToken,cart.total,history]);
+
+  console.log(stripeToken);
   return (
     <Container>
       <Navbar />
@@ -228,7 +259,16 @@ const Cart = () => {
                   <SummaryItemText >Total</SummaryItemText>
                   <SummaryItemText>$ {cart.total}</SummaryItemText>
               </SummaryItem>
-              <SummaryButton>Checkout Now</SummaryButton>
+              <StripeCheckout
+              name="Lama Shop"
+              image="https://avatars.githubusercontent.com/u/1486366?v=4"
+              billingAddress
+              shippingAddress
+              description={`Your total is $${cart.total}`}
+              amount={cart.total * 100}
+              token={onToken}
+              stripeKey={KEY}
+            >Checkout Now</StripeCheckout>
           </Summary>
         </Bottom>
       </Wrapper>

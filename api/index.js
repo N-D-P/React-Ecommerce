@@ -26,7 +26,7 @@ app.use("/api/auth",AuthRouter);
 app.use("/api/products",ProductRouter);
 app.use("/api/orders",OrderRouter);
 app.use("/api/cart",CartRouter);
-app.use("/api/payment", PaymentRouter);
+app.use("/api/checkout", PaymentRouter);
 
 
 
